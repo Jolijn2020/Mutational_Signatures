@@ -1,3 +1,4 @@
 python_version = 3.12
 jupyterlab = 4.3.0
 pandas = 2.2.3
+matplotlib
