@@ -12,7 +12,7 @@ def simulate_data(config):
     signatures = get_signatures(config["signatures_file_path"], config["signatures_to_extract"])
 
     # create the sample distributions
-    sample_distr_config = config["sample_distribution"]
+    sample_distr_config = config["sample_signature_distribution"]
     sample_distr_function = get_distribution_function(sample_distr_config)
 
     sample_distributions = get_distribution_of_samples(signatures, config["n_samples"],  sample_distr_config['use_sign_active_prob'], sample_distr_config.get('sign_active_prob'), sample_distr_config.get('n_sign_active'), sample_distr_function)
@@ -22,7 +22,7 @@ def simulate_data(config):
     counts_function = get_distribution_function(config['counts_distribution'])
     simulated_data = calculate_counts(signatures, sample_distributions, noise_function, counts_function)
 
-    data_file, config_file = create_file_names(config['save_dir'], config['signatures_to_extract'])
+    data_file, config_file = create_file_names(config['save_dir'], config['signatures_to_extract'], config['signatures_file_path'])
     simulated_data.to_csv(data_file, index=True)
     print('Sucessfully saved simulated data in ' + data_file)
 
@@ -30,7 +30,8 @@ def simulate_data(config):
         json.dump(config, f)
     print('Sucessfully saved meta-data in ' + config_file)
 
-    return simulated_data
+    return simulated_data, data_file, config_file
+
 
 def get_distribution_function(config):
     failed = False
@@ -65,8 +66,8 @@ def get_distribution_function(config):
     return func
 
 
-def create_file_names(dir_path, signatures):
-    # get current files
+def create_file_names(dir_path, signatures, signatures_file):
+    # get current files and find an unused version ID
     files = os.listdir(dir_path)
     num = int(len(files)/2)
     num_used = True
@@ -76,10 +77,15 @@ def create_file_names(dir_path, signatures):
         use_num_files = [f for f in files if substring in f]
         if len(use_num_files) == 0:
             num_used = False
+    
+    # Get the type of signature measurements
+    index_SBS = signatures_file.index('SBS_') + 4
+    sign_type = signatures_file[index_SBS:len(signatures_file)-4]
 
-    name = dir_path + "/data_v" + str(num) +  "_sign_"
+    # Create the name using the version ID
+    name = dir_path + "/data_v" + str(num) +  "_" + sign_type
     for signature in signatures:
-        name += str(signature[3:]) + "_"
+        name += "_" + str(signature[3:])
     name += ".csv"
 
     name_config = dir_path + "/config_v" + str(num) + ".json"
@@ -133,80 +139,6 @@ def get_distribution_of_samples(signatures, n_samples, use_sign_active_prob, sig
     df_sparse = df_sparse.set_index(signatures.columns)
     return df_sparse
 
-# def get_noise_function(func_string, min=0, max=20, avg=10):
-#     match func_string.lower():
-#         case "poisson":
-#             def noise_func():
-#                 return np.random.poisson(avg)
-#         case "uniform":
-#             def noise_func():
-#                 return random.uniform(min, max)
-#         case _:
-#             def noise_func():
-#                 return np.random.poisson(10)
-#     return noise_func
-
-# def get_n_counts_function(func_string, min=1000, max=50000, avg=10000, sigma=5000):
-#     match func_string.lower():
-#         case "logscale":
-#             def n_counts_func():
-#                 return 10 ** (random.uniform(math.log(min, 10), math.log(max, 10)))
-#         case "uniform":
-#             def n_counts_func():
-#                 return random.uniform(min, max)
-#         case "normal":
-#             def n_counts_func():
-#                 return random.normalvariate(avg, sigma)
-#         case _:
-#             def n_counts_func():
-#                 return 10 ** (random.uniform(math.log(1000, 10), math.log(50000, 10)))
-#     return n_counts_func
-
-# def get_sample_distribution_function(distribution, min, max, avg, sigma):
-
-#     match distribution.lower():
-#         case "poisson":
-#             def func():
-#                 return np.random.poisson(avg)
-#         case "uniform":
-#             def func():
-#                 return random.uniform(min, max)
-#         case "normal":
-#             def func():
-#                 return random.normalvariate(avg, sigma)
-#         case _:
-#             def func():
-#                 return random.uniform(min, max)
-#     return func
-
-# def get_noise_function(distribution, min=0, max=20, avg=10, sigma=1):
-#     match distribution.lower():
-#         case "poisson":
-#             def func():
-#                 return np.random.poisson(avg)
-#         case "uniform":
-#             def func():
-#                 return random.uniform(min, max)
-#         case _:
-#             def func():
-#                 return np.random.poisson(10)
-#     return func
-
-# def get_n_counts_function(distribution, min=1000, max=50000, avg=10000, sigma=5000):
-#     match distribution.lower():
-#         case "logscale":
-#             def func():
-#                 return 10 ** (random.uniform(math.log(min, 10), math.log(max, 10)))
-#         case "uniform":
-#             def func():
-#                 return random.uniform(min, max)
-#         case "normal":
-#             def func():
-#                 return random.normalvariate(avg, sigma)
-#         case _:
-#             def func():
-#                 return 10 ** (random.uniform(math.log(1000, 10), math.log(50000, 10)))
-#     return func
 
 def calculate_counts(signatures, sample_distributions, noise_func, n_counts_func):
     simulated_data = signatures.dot(sample_distributions)
