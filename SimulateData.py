@@ -92,7 +92,6 @@ def create_file_names(dir_path, signatures, signatures_file):
     return name, name_config
 
 def get_signatures(file_path, signatures_to_extract):
-
     df = pd.read_csv(file_path, sep='\t')
     
     # Set Type  as the index 
@@ -119,14 +118,14 @@ def get_distribution_of_samples(signatures, n_samples, use_sign_active_prob, sig
 
         # Use the predetermined amount of signatures to be used and select randomly from the signatures list
         else:
-            if signatures.shape[1] < n_sign_active:
+            if signatures.shape[1] <= n_sign_active:
                 distribution = [sign_distribution() for x in range(0, signatures.shape[1])]
             else:
-                distribution = [0] * n_sign_active
+                distribution = [0] * signatures.shape[1]
                 sign_count = 0
                 # Keep adding signatures until have enough
                 while sign_count < n_sign_active:
-                    index = random.randint(0, n_sign_active)
+                    index = random.randint(0, len(distribution)-1)
                     if distribution[index] == 0:
                         distribution[index] = sign_distribution()
                         sign_count += 1
@@ -142,6 +141,7 @@ def get_distribution_of_samples(signatures, n_samples, use_sign_active_prob, sig
 
 def calculate_counts(signatures, sample_distributions, noise_func, n_counts_func):
     simulated_data = signatures.dot(sample_distributions)
+
     for i in range(simulated_data.shape[1]):
         distribution = simulated_data[i]
 
