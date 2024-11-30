@@ -18,9 +18,7 @@ def simulate_data(config):
     sample_distributions = get_distribution_of_samples(signatures, config["n_samples"],  sample_distr_config['use_sign_active_prob'], sample_distr_config.get('sign_active_prob'), sample_distr_config.get('n_sign_active'), sample_distr_function)
 
     # Simulate the data (including noise)
-    noise_function = get_distribution_function(config['noise_distribution'])
-    counts_function = get_distribution_function(config['counts_distribution'])
-    simulated_data = calculate_counts(signatures, sample_distributions, noise_function, counts_function)
+    simulated_data = calculate_counts(signatures, sample_distributions, config)
 
     data_file, config_file = create_file_names(config['save_dir'], config['signatures_to_extract'], config['signatures_file_path'])
     simulated_data.to_csv(data_file, index=True)
@@ -39,7 +37,7 @@ def get_distribution_function(config):
         case "poisson":
             if config.get('avg') != None:
                 def func():
-                    return np.random.poisson(config.get('avg'))
+                    return np.random.poisson(config.get('avg_perc'))
             else:
                 failed = True
         case "uniform":
@@ -65,6 +63,16 @@ def get_distribution_function(config):
         raise RuntimeError("The right value(s) were not specified for the " + config.get('distribution') + " distribution.")
     return func
 
+def get_noise_distribution_function(config):
+    failed = False
+    match config['distribution'].lower():
+        case "poisson":
+            if config.get('avg_perc') != None:
+                def func(total_mutations):
+                    return np.random.poisson(config.get('avg_perc')*total_mutations)
+            else:
+                failed = True
+    return func
 
 def create_file_names(dir_path, signatures, signatures_file):
     # get current files and find an unused version ID
@@ -139,22 +147,24 @@ def get_distribution_of_samples(signatures, n_samples, use_sign_active_prob, sig
     return df_sparse
 
 
-def calculate_counts(signatures, sample_distributions, noise_func, n_counts_func):
+def calculate_counts(signatures, sample_distributions, config):
+    counts_func = get_distribution_function(config['counts_distribution'])
+    noise_func = get_noise_distribution_function(config['noise_distribution'])
+
     simulated_data = signatures.dot(sample_distributions)
 
     for i in range(simulated_data.shape[1]):
         distribution = simulated_data[i]
 
         # The total number of mutations in a sample
-        n_counts = n_counts_func()
+        n_counts = counts_func()
         counts = [int(x*n_counts) for x in distribution]
 
         # Add noise
-        noisy_counts = [x+noise_func() for x in counts]
+        noisy_counts = [x+noise_func(n_counts) for x in counts]
         simulated_data[i] = noisy_counts
 
     return simulated_data
-
 
 
 # Old methods, not used anymore, but might come in handy later
