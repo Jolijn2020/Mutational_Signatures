@@ -4,6 +4,62 @@ import os
 import random
 import math
 import json
+import argparse
+from pprint import pprint
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Arguments for simulation")
+
+    # Config file argument
+    parser.add_argument("--config", type=str, default="simulated_data/config_v1.json",help="Path to the JSON configuration file.")
+
+    # Single-value arguments
+    parser.add_argument("--identifier", type=str, default="data", help="String identifier for your experiment")
+    parser.add_argument("--signatures_file_path", type=str, default="cosmic_signatures/COSMIC_v3.4_SBS_GRCh37.txt", help="Path to the file containing signatures.")
+    parser.add_argument("--n_samples", type=int, help="Number of samples to simulate.")
+    parser.add_argument("--save_dir", type=str, help="Directory to save the simulated data.")
+
+    # List arguments
+    parser.add_argument("--signatures_to_extract", nargs="+", help="List of signatures to extract.")
+
+    # Nested arguments for sample_signature_distribution
+    parser.add_argument("--sample_signature_distribution_distribution", type=str, help="Distribution type for signature sampling.")
+    parser.add_argument("--sample_signature_distribution_min", type=float, help="Minimum value for uniform distribution.")
+    parser.add_argument("--sample_signature_distribution_max", type=float, help="Maximum value for uniform distribution.")
+    parser.add_argument("--sample_signature_distribution_use_sign_active_prob", action="store_true", help="Whether to use sign active probability.")
+    parser.add_argument("--sample_signature_distribution_sign_active_prob", type=float, help="Probability of a signature being active.")
+    parser.add_argument("--sample_signature_distribution_n_sign_active", type=int, help="Number of signatures active per sample.")
+
+    # Nested arguments for noise_distribution
+    parser.add_argument("--noise_distribution_distribution", type=str, help="Noise distribution type.")
+    parser.add_argument("--noise_distribution_avg_perc", type=float, help="Average percentage for noise.")
+
+    # Nested arguments for counts_distribution
+    parser.add_argument("--counts_distribution_distribution", type=str, help="Counts distribution type.")
+    parser.add_argument("--counts_distribution_min", type=int, help="Minimum counts value.")
+    parser.add_argument("--counts_distribution_max", type=int, help="Maximum counts value.")
+
+    return parser.parse_args()
+
+def load_config(args):
+    config = dict()
+    if args.config:
+        with open(args.config, "r") as f:
+            config = json.load(f)
+        for key, value in config.items():
+            if isinstance(value, dict):  # Handle nested dictionaries
+                for sub_key, sub_value in value.items():
+                    if getattr(args, f"{key}_{sub_key}") != None:
+                        print(getattr(args, f"{key}_{sub_key}"))
+                        config[key][sub_key] = getattr(args, f"{key}_{sub_key}")
+            else:
+                if getattr(args, key) != None:
+                    print(key)
+                    config[key] = getattr(args, key)
+    config['identifier'] = args.identifier
+    return config
+
+
 
 def simulate_data(config):
     # signatures_file_path, signatures_to_extract, n_samples, average_noise, save_dir=None
@@ -15,12 +71,12 @@ def simulate_data(config):
     sample_distr_config = config["sample_signature_distribution"]
     sample_distr_function = get_distribution_function(sample_distr_config)
 
-    sample_distributions = get_distribution_of_samples(signatures, config["n_samples"],  sample_distr_config['use_sign_active_prob'], sample_distr_config.get('sign_active_prob'), sample_distr_config.get('n_sign_active'), sample_distr_function)
+    sample_distributions = get_distribution_of_samples(signatures, config["n_samples"], sample_distr_config['use_sign_active_prob'], sample_distr_config.get('sign_active_prob'), sample_distr_config.get('n_sign_active'), sample_distr_function)
 
     # Simulate the data (including noise)
     simulated_data = calculate_counts(signatures, sample_distributions, config)
 
-    data_file, config_file = create_file_names(config['save_dir'], config['signatures_to_extract'], config['signatures_file_path'])
+    data_file, config_file = create_file_names(config['save_dir'], config['signatures_to_extract'], config['signatures_file_path'], config['identifier'])
     simulated_data.to_csv(data_file, index=True)
     print('Sucessfully saved simulated data in ' + data_file)
 
@@ -74,29 +130,18 @@ def get_noise_distribution_function(config):
                 failed = True
     return func
 
-def create_file_names(dir_path, signatures, signatures_file):
-    # get current files and find an unused version ID
-    files = os.listdir(dir_path)
-    num = int(len(files)/2)
-    num_used = True
-    while num_used:
-        num += 1
-        substring = 'data_v' + str(num) + '_'
-        use_num_files = [f for f in files if substring in f]
-        if len(use_num_files) == 0:
-            num_used = False
+def create_file_names(dir_path, signatures, signatures_file, identifier):
     
     # Get the type of signature measurements
     index_SBS = signatures_file.index('SBS_') + 4
     sign_type = signatures_file[index_SBS:len(signatures_file)-4]
 
     # Create the name using the version ID
-    name = dir_path + "/data_v" + str(num) +  "_" + sign_type
-    for signature in signatures:
-        name += "_" + str(signature[3:])
-    name += ".csv"
+    signature_string = '_'.join([x[3:] for x in signatures])
+    base_name = f"{identifier}_{sign_type}_{signature_string}"
 
-    name_config = dir_path + "/config_v" + str(num) + ".json"
+    name = os.path.join(dir_path, f"{base_name}.csv")
+    name_config = os.path.join(dir_path, f"config_{base_name}.json")
     return name, name_config
 
 def get_signatures(file_path, signatures_to_extract):
@@ -185,3 +230,14 @@ def get_specific_signature_from_old_signatures(signatures_list, signature_names,
         signatures = pd.concat([signatures, column], axis = 1)
 
     return signatures
+
+
+if __name__ == "__main__":
+    args = parse_args()
+    config = load_config(args)
+
+    pprint(config)
+    simulated_data, data_file, config_file = simulate_data(config)
+
+    print('')
+    print(simulated_data.head())
