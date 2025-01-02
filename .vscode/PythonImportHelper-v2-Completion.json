@@ -1,0 +1,137 @@
+[
+    {
+        "label": "pandas",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pandas",
+        "description": "pandas",
+        "detail": "pandas",
+        "documentation": {}
+    },
+    {
+        "label": "numpy",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "numpy",
+        "description": "numpy",
+        "detail": "numpy",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "random",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "random",
+        "description": "random",
+        "detail": "random",
+        "documentation": {}
+    },
+    {
+        "label": "math",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "math",
+        "description": "math",
+        "detail": "math",
+        "documentation": {}
+    },
+    {
+        "label": "json",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "json",
+        "description": "json",
+        "detail": "json",
+        "documentation": {}
+    },
+    {
+        "label": "simulate_data",
+        "kind": 2,
+        "importPath": "SimulateData",
+        "description": "SimulateData",
+        "peekOfCode": "def simulate_data(config):\n    # signatures_file_path, signatures_to_extract, n_samples, average_noise, save_dir=None\n    # Read in the signatures\n    signatures = get_signatures(config[\"signatures_file_path\"], config[\"signatures_to_extract\"])\n    # create the sample distributions\n    sample_distr_config = config[\"sample_signature_distribution\"]\n    sample_distr_function = get_distribution_function(sample_distr_config)\n    sample_distributions = get_distribution_of_samples(signatures, config[\"n_samples\"],  sample_distr_config['use_sign_active_prob'], sample_distr_config.get('sign_active_prob'), sample_distr_config.get('n_sign_active'), sample_distr_function)\n    # Simulate the data (including noise)\n    simulated_data = calculate_counts(signatures, sample_distributions, config)",
+        "detail": "SimulateData",
+        "documentation": {}
+    },
+    {
+        "label": "get_distribution_function",
+        "kind": 2,
+        "importPath": "SimulateData",
+        "description": "SimulateData",
+        "peekOfCode": "def get_distribution_function(config):\n    failed = False\n    match config['distribution'].lower():\n        case \"poisson\":\n            if config.get('avg') != None:\n                def func():\n                    return np.random.poisson(config.get('avg_perc'))\n            else:\n                failed = True\n        case \"uniform\":",
+        "detail": "SimulateData",
+        "documentation": {}
+    },
+    {
+        "label": "get_noise_distribution_function",
+        "kind": 2,
+        "importPath": "SimulateData",
+        "description": "SimulateData",
+        "peekOfCode": "def get_noise_distribution_function(config):\n    failed = False\n    match config['distribution'].lower():\n        case \"poisson\":\n            if config.get('avg_perc') != None:\n                def func(total_mutations):\n                    return np.random.poisson(config.get('avg_perc')*total_mutations)\n            else:\n                failed = True\n    return func",
+        "detail": "SimulateData",
+        "documentation": {}
+    },
+    {
+        "label": "create_file_names",
+        "kind": 2,
+        "importPath": "SimulateData",
+        "description": "SimulateData",
+        "peekOfCode": "def create_file_names(dir_path, signatures, signatures_file):\n    # get current files and find an unused version ID\n    files = os.listdir(dir_path)\n    num = int(len(files)/2)\n    num_used = True\n    while num_used:\n        num += 1\n        substring = 'data_v' + str(num) + '_'\n        use_num_files = [f for f in files if substring in f]\n        if len(use_num_files) == 0:",
+        "detail": "SimulateData",
+        "documentation": {}
+    },
+    {
+        "label": "get_signatures",
+        "kind": 2,
+        "importPath": "SimulateData",
+        "description": "SimulateData",
+        "peekOfCode": "def get_signatures(file_path, signatures_to_extract):\n    df = pd.read_csv(file_path, sep='\\t')\n    # Set Type  as the index \n    if 'Type' in df.columns:\n        df.set_index('Type', inplace=True)\n    signatures = df[signatures_to_extract]\n    return signatures\ndef get_distribution_of_samples(signatures, n_samples, use_sign_active_prob, sign_active_prob, n_sign_active, sign_distribution):\n    df_sparse = pd.DataFrame()\n    for i in range(n_samples):",
+        "detail": "SimulateData",
+        "documentation": {}
+    },
+    {
+        "label": "get_distribution_of_samples",
+        "kind": 2,
+        "importPath": "SimulateData",
+        "description": "SimulateData",
+        "peekOfCode": "def get_distribution_of_samples(signatures, n_samples, use_sign_active_prob, sign_active_prob, n_sign_active, sign_distribution):\n    df_sparse = pd.DataFrame()\n    for i in range(n_samples):\n        # Get a distribution of the counts\n        # Use the probability of a signature being present\n        if use_sign_active_prob:\n            distribution = [sign_distribution() if random.uniform(0, 1) < sign_active_prob else 0 for x in range(0, signatures.shape[1])]\n            total = sum(distribution)\n            while(sum(distribution)==0):\n                distribution = [sign_distribution() if random.uniform(0, 1) < sign_active_prob else 0 for x in range(0, signatures.shape[1])]",
+        "detail": "SimulateData",
+        "documentation": {}
+    },
+    {
+        "label": "calculate_counts",
+        "kind": 2,
+        "importPath": "SimulateData",
+        "description": "SimulateData",
+        "peekOfCode": "def calculate_counts(signatures, sample_distributions, config):\n    counts_func = get_distribution_function(config['counts_distribution'])\n    noise_func = get_noise_distribution_function(config['noise_distribution'])\n    simulated_data = signatures.dot(sample_distributions)\n    for i in range(simulated_data.shape[1]):\n        distribution = simulated_data[i]\n        # The total number of mutations in a sample\n        n_counts = counts_func()\n        counts = [int(x*n_counts) for x in distribution]\n        # Add noise",
+        "detail": "SimulateData",
+        "documentation": {}
+    },
+    {
+        "label": "get_signatures_from_old_files",
+        "kind": 2,
+        "importPath": "SimulateData",
+        "description": "SimulateData",
+        "peekOfCode": "def get_signatures_from_old_files(folder_path):\n    arr = os.listdir(folder_path)\n    signatures = []\n    signature_names = []\n    for file in arr:\n        if file.startswith(\"SBS\"):\n            signatures.append(pd.read_csv(os.path.join(folder_path, file)))\n            signature_names.append(file.removesuffix('.csv'))\n    return signatures, signature_names\ndef get_specific_signature_from_old_signatures(signatures_list, signature_names, signature='_GRCh37'):",
+        "detail": "SimulateData",
+        "documentation": {}
+    },
+    {
+        "label": "get_specific_signature_from_old_signatures",
+        "kind": 2,
+        "importPath": "SimulateData",
+        "description": "SimulateData",
+        "peekOfCode": "def get_specific_signature_from_old_signatures(signatures_list, signature_names, signature='_GRCh37'):\n    signatures = pd.DataFrame()\n    for i in range(len(signature_names)):\n        column = signatures_list[i][signature_names[i] + signature]\n        signatures = pd.concat([signatures, column], axis = 1)\n    return signatures",
+        "detail": "SimulateData",
+        "documentation": {}
+    }
+]
