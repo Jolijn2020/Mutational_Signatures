@@ -2,16 +2,4 @@ python_version = 3.12
 jupyterlab = 4.3.0
 pandas = 2.2.3
 matplotlib
-
-# Switch to the target branch
-git checkout main
-
-# Add file.txt from feature-branch
-git checkout feature-branch -- file.txt
-
-# Stage and commit the file
-git add file.txt
-git commit -m "Add file.txt from feature-branch"
-
-# Push the changes
-git push
+SigProfileExtractor
