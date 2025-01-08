@@ -5,7 +5,7 @@ import random
 import math
 import json
 
-def simulate_data(config):
+def simulate_data(config, print=True):
     # signatures_file_path, signatures_to_extract, n_samples, average_noise, save_dir=None
 
     # Read in the signatures
@@ -22,11 +22,15 @@ def simulate_data(config):
 
     data_file, config_file = create_file_names(config['save_dir'], config['signatures_to_extract'], config['signatures_file_path'])
     simulated_data.to_csv(data_file, index=True)
-    print('Sucessfully saved simulated data in ' + data_file)
+    if print:
+        print('Sucessfully saved simulated data in ' + data_file)
 
     with open(config_file, 'w') as f:
         json.dump(config, f)
-    print('Sucessfully saved meta-data in ' + config_file)
+    if print:
+        print('Sucessfully saved meta-data in ' + config_file)
+        print('')
+        print(simulated_data.head())
 
     return simulated_data, data_file, config_file
 
