@@ -160,3 +160,8 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+decomposed_matrices_s_8_n_0.04
+decomposed_matrices_s_15_n_0.06
+decomposed_matrices_s_25_n_0.06
+results_s_25_n_0.06_GRCh37_17b_86_98_39_22a_43_17a_13_54_33_21_59_60_87_37_96_28_55_99_26_3_1_12_93_22b
