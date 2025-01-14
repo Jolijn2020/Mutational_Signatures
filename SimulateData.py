@@ -38,6 +38,7 @@ def parse_args():
     parser.add_argument("--counts_distribution_distribution", type=str, help="Counts distribution type.")
     parser.add_argument("--counts_distribution_min", type=int, help="Minimum counts value.")
     parser.add_argument("--counts_distribution_max", type=int, help="Maximum counts value.")
+    parser.add_argument("--counts_distribution_cancer_type", type=str, help="Cancer type name.")
 
     return parser.parse_args()
 
@@ -61,7 +62,7 @@ def load_config(args):
 
 
 
-def simulate_data(config, print=True):
+def simulate_data(config, print=False):
     # signatures_file_path, signatures_to_extract, n_samples, average_noise, save_dir=None
 
     # Read in the signatures
@@ -197,13 +198,32 @@ def get_distribution_of_samples(signatures, n_samples, use_sign_active_prob, sig
 
 
 def calculate_counts(signatures, sample_distributions, config):
-    counts_func = get_distribution_function(config['counts_distribution'])
+    counts_min_max = pd.read_csv('mutation_counts/TCGA/WES_TCGA.96_min_max.csv')
+    config_counts = config['counts_distribution']
+    cancer_type = config_counts['cancer_type']
+    n_cancer_types = counts_min_max.shape[0]
+    cancer_types = list(counts_min_max.index.values) 
+
+    if cancer_type == 'NA':
+        counts_func = get_distribution_function(config_counts)
+    if cancer_type != 'random':
+        config_counts['min'] = counts_min_max.loc[cancer_type, 'min_counts']
+        config_counts['max'] = counts_min_max.loc[cancer_type, 'max_counts']
+
+
     noise_func = get_noise_distribution_function(config['noise_distribution'])
 
     simulated_data = signatures.dot(sample_distributions)
 
     for i in range(simulated_data.shape[1]):
         distribution = simulated_data[i]
+
+        # If the cancer_type is random, use a different random cancer_type each time
+        if cancer_type == 'random':
+            cancer_type_index = random.randint(0, n_cancer_types-1)
+            config_counts['min'] = counts_min_max.loc[cancer_types[cancer_type_index], 'min_counts']
+            config_counts['max'] = counts_min_max.loc[cancer_types[cancer_type_index], 'max_counts']
+            counts_func = get_distribution_function(config_counts)
 
         # The total number of mutations in a sample
         n_counts = counts_func()
