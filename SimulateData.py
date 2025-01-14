@@ -62,7 +62,7 @@ def load_config(args):
 
 
 
-def simulate_data(config, print=True):
+def simulate_data(config, print=False):
     # signatures_file_path, signatures_to_extract, n_samples, average_noise, save_dir=None
 
     # Read in the signatures
