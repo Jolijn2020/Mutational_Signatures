@@ -1,7 +1,7 @@
 {
   "signatures_file_path":     "cosmic_signatures/COSMIC_v3.4_SBS_GRCh37.txt",
   "signatures_to_extract":    ["SBS4", "SBS6", "SBS7a","SBS9","SBS18"],
-  "n_samples":                10,
+  "n_samples":                100,
   "save_dir":                 "simulated_data",
   "sample_signature_distribution": {
       "distribution":             "uniform",
