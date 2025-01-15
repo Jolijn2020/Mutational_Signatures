@@ -128,7 +128,7 @@ end
 
  % Compute initial lambda using the initialized Hlambda and D
  lambda_init = exp(-D' * Hlambda / rhoL);
- %lambda_init = bsxfun(@rdivide, lambda_init, sum(lambda_init));
+ lambda_init = bsxfun(@rdivide, lambda_init, sum(lambda_init));
 
  D_init = D;
  HD_init = HD;
