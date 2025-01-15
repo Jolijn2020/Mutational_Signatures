@@ -1,4 +1,4 @@
-function [D, lambda, objectives, HD, Hlambda, D_init, HD_init, Hlambda_init]=wasserstein_DL(X,p,M,gamma,rhoL,rhoD,options,initialValues)
+function [D, lambda, objectives, HD, Hlambda, D_init, HD_init, Hlambda_init, lambda_init]=wasserstein_DL(X,p,M,gamma,rhoL,rhoD,options,initialValues)
 %% Dictionary learning with regularized wasserstein cost.
 % This function solves
 %
@@ -107,7 +107,7 @@ if options.GPU
     gpuDevice(options.GPU);
 end
 
-% Create optimizers
+% Create Lamrs
 if ~exist('rhoL','var') || isempty(rhoL)
     disp('No rhoL');
     rhoL=0;
@@ -118,15 +118,21 @@ if ~exist('rhoD','var') || isempty(rhoD)
 end
 [optimizeLambda, optimizeD,options, sizeD]=createHandlers(options,X,M,p,gamma,rhoL,rhoD);
 
-% Create or assign starting values
-if ~exist('initialValues','var') || isempty(initialValues)
-    initialValues=struct();
-end
-[D, HD, Hlambda]=initialValue(options,optimizeD,X,p,sizeD,initialValues);
 
-D_init = D;
-HD_init = HD;
-Hlambda_init = Hlambda;
+
+% Create or assign starting values
+ if ~exist('initialValues', 'var') || isempty(initialValues)
+     initialValues = struct();
+ end
+ [D, HD, Hlambda] = initialValue(options, optimizeD, X, p, sizeD, initialValues);
+
+ % Compute initial lambda using the initialized Hlambda and D
+ lambda_init = exp(-D' * Hlambda / rhoL);
+ %lambda_init = bsxfun(@rdivide, lambda_init, sum(lambda_init));
+
+ D_init = D;
+ HD_init = HD;
+ Hlambda_init = Hlambda;
 
 
 clear initialValues;

@@ -18,4 +18,4 @@ params.experiment_name = 'with_hamming';
 params.M_path = 'distances/hamming_distances.tsv';
 
 
-all_reconstructed_datakl = Pipeline(params)
+all_lambda = Pipeline(params)

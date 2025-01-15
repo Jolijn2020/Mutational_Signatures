@@ -1,4 +1,4 @@
-function[all_reconstructed_datakl] = Pipeline(params)
+function[ all_lambda_init] = Pipeline(params)
     
     fields = fieldnames(params);
     for i = 1:numel(fields)
@@ -37,7 +37,7 @@ function[all_reconstructed_datakl] = Pipeline(params)
     M = generate_cost_matrix_M(x);
 
     % Perform Wasserstein NMF
-    [D, lambda, objectives_wnmf, reconstructed_data, all_Dw, all_lambdaw, all_reconstructed_dataw, all_D_init, all_lambda_init] = perform_WNMF(data, M, num_iter, ...
+    [ all_H_lambda_init, D, lambda, objectives_wnmf, reconstructed_data, all_Dw, all_lambdaw, all_reconstructed_dataw, all_D_init, all_lambda_init] = perform_WNMF(data, M, num_iter, ...
         stop, verb, Dss, lss, Alpha, Km, GPU, k, Gamma, wO, rho1, rho2);
 
     % Plot convergence of objectives for Wasserstein NMF
@@ -114,7 +114,7 @@ function [M] = generate_cost_matrix_M(x)
     M = M / median(M(:));           % Normalize the cost matrix
 end
 
-function [best_D, best_lambda, all_objectives, best_reconstructed_data, all_D, ...
+function [all_H_lambda_init, best_D, best_lambda, all_objectives, best_reconstructed_data, all_D, ...
     all_lambda, all_reconstructed_data, all_D_init, all_lambda_init] = perform_WNMF(data, ...
     M, num_iter, stop, verb, Dss, lss, Alpha, Km, GPU, k, Gamma, wO, rho1, rho2)
 
@@ -128,6 +128,7 @@ function [best_D, best_lambda, all_objectives, best_reconstructed_data, all_D, .
     all_D_init = cell(1, num_iter); % Store all D_init matrices
     all_lambda = cell(1, num_iter); % Store all lambda matrices
     all_lambda_init = cell(1, num_iter); % Store all lambda matrices
+    all_H_lambda_init = cell(1, num_iter); 
     all_reconstructed_data = cell(1, num_iter); % Store all reconstructed data matrices
 
     % Check that the number of provided initializations matches the number of iterations
@@ -153,7 +154,7 @@ function [best_D, best_lambda, all_objectives, best_reconstructed_data, all_D, .
 
         % Perform Wasserstein NMF
         fprintf('Performing Wasserstein NMF iteration %d...\n', iter);
-        [D, lambda, objectives, HD, Hlambda, D_init, HD_init, lambda_init] = wasserstein_DL(data, k, M.^wO, Gamma, rho1, rho2, options);
+        [D, lambda, objectives, HD, Hlambda, D_init, HD_init, hlambda_init, lambda_init] = wasserstein_DL(data, k, M.^wO, Gamma, rho1, rho2, options);
         reconstructed_data = D * lambda;
 
         % Save objectives for this iteration
@@ -165,6 +166,7 @@ function [best_D, best_lambda, all_objectives, best_reconstructed_data, all_D, .
         all_reconstructed_data{iter} = reconstructed_data;
         all_D_init{iter} = D_init;
         all_lambda_init{iter} = lambda_init;
+        all_H_lambda_init{iter} = hlambda_init; 
 
 
         % Check if this iteration's final objective is better (smaller)
@@ -208,6 +210,7 @@ function [D_best, lambda_best, all_objectives_klnmf, ...
 reconstructed_data_best, all_D, all_lambda, all_reconstructed_data] = perform_KLNMF(data, k, num_iter, ...
 D_init_array, lambda_init_array, stop, verbose)
     % Perform KL NMF with multiple replicates and custom shared parameters
+   
 
     % Validate input sizes
     if length(D_init_array) ~= num_iter || length(lambda_init_array) ~= num_iter
@@ -233,6 +236,7 @@ D_init_array, lambda_init_array, stop, verbose)
         % Use the provided initializations for this replicate
         D_init = D_init_array{i};
         lambda_init = lambda_init_array{i};
+        size(lambda_init)
 
         % Initialize objectives array for this replicate
         iteration_objectives = [];
@@ -240,7 +244,7 @@ D_init_array, lambda_init_array, stop, verbose)
         % Perform NNMF with the provided initialization
         options = statset('MaxIter', 100, 'TolFun', stop, 'Display', 'final');
         
-        [D, lambda] = nnmf(data, k, 'algorithm', 'mult', 'w0', D_init, 'options', options);
+        [D, lambda] = nnmf(data, k, 'algorithm', 'mult', 'w0', D_init, 'h0', lambda_init, 'options', options);
 
 
         % Reconstruct the data and track the objective (reconstruction error) at each step
