@@ -207,7 +207,7 @@ def calculate_counts(signatures, sample_distributions, config):
 
     if cancer_type == 'NA':
         counts_func = get_distribution_function(config_counts)
-    if cancer_type != 'random':
+    elif cancer_type != 'random':
         config_counts['min'] = int(counts_min_max.loc[cancer_type, 'min_counts'])
         config_counts['max'] = int(counts_min_max.loc[cancer_type, 'max_counts'])
 
