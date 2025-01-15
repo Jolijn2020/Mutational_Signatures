@@ -199,7 +199,7 @@ def get_distribution_of_samples(signatures, n_samples, use_sign_active_prob, sig
 
 
 def calculate_counts(signatures, sample_distributions, config):
-    counts_min_max = pd.read_csv('mutation_counts/TCGA/WES_TCGA.96_min_max.csv')
+    counts_min_max = pd.read_csv('mutation_counts/TCGA/WES_TCGA.96_min_max.csv', sep=',')
     config_counts = config['counts_distribution']
     cancer_type = config_counts['cancer_type']
     n_cancer_types = counts_min_max.shape[0]
@@ -208,8 +208,10 @@ def calculate_counts(signatures, sample_distributions, config):
     if cancer_type == 'NA':
         counts_func = get_distribution_function(config_counts)
     elif cancer_type != 'random':
+        counts_min_max = counts_min_max.set_index('cancer_type')
         config_counts['min'] = int(counts_min_max.loc[cancer_type, 'min_counts'])
         config_counts['max'] = int(counts_min_max.loc[cancer_type, 'max_counts'])
+        counts_func = get_distribution_function(config_counts)
 
 
     noise_func = get_noise_distribution_function(config['noise_distribution'])
