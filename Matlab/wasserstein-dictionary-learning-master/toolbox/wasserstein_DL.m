@@ -1,4 +1,4 @@
-function [D, lambda, objectives, HD, Hlambda]=wasserstein_DL(X,p,M,gamma,rhoL,rhoD,options,initialValues)
+function [D, lambda, objectives, HD, Hlambda, D_init, HD_init, Hlambda_init]=wasserstein_DL(X,p,M,gamma,rhoL,rhoD,options,initialValues)
 %% Dictionary learning with regularized wasserstein cost.
 % This function solves
 %
@@ -109,9 +109,11 @@ end
 
 % Create optimizers
 if ~exist('rhoL','var') || isempty(rhoL)
+    disp('No rhoL');
     rhoL=0;
 end
 if ~exist('rhoD','var') || isempty(rhoD)
+    disp('No rhoD');
     rhoD=0;
 end
 [optimizeLambda, optimizeD,options, sizeD]=createHandlers(options,X,M,p,gamma,rhoL,rhoD);
@@ -121,6 +123,11 @@ if ~exist('initialValues','var') || isempty(initialValues)
     initialValues=struct();
 end
 [D, HD, Hlambda]=initialValue(options,optimizeD,X,p,sizeD,initialValues);
+
+D_init = D;
+HD_init = HD;
+Hlambda_init = Hlambda;
+
 
 clear initialValues;
 biglast=0;
@@ -311,11 +318,13 @@ optionsD.dual_descent_stop=options.D_step_stop;
 
 % Create solvers depending on options.algorithms
 if rhoL
+    disp('Running NMF due to rhoL');
     optimizeLambda=@(D,Hlambda)wasserstein_NMF_coefficient_step(X,K,D,gamma,rhoL,Hlambda,options,1);
 else
     optimizeLambda=@(D,Hlambda)wasserstein_DL_coefficient_step(X,K,D,gamma,Hlambda,options,1);
 end
 if rhoD
+    disp('Running NMF due to rhoD');
     optimizeDcomplete=@(lambda,HD)wasserstein_NMF_dictionary_step(X,K,lambda,gamma,rhoD,HD,optionsD,1);
 else
     optimizeDcomplete=@(lambda,HD)wasserstein_DL_dictionary_step(X,K,lambda,gamma,HD,optionsD,1);
