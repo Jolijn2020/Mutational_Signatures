@@ -209,9 +209,11 @@ def calculate_counts(signatures, sample_distributions, config):
         counts_func = get_distribution_function(config_counts)
     elif cancer_type != 'random':
         counts_min_max = counts_min_max.set_index('cancer_type')
-        config_counts['min'] = int(counts_min_max.loc[cancer_type, 'min_counts'])
-        config_counts['max'] = int(counts_min_max.loc[cancer_type, 'max_counts'])
-        counts_func = get_distribution_function(config_counts)
+        cancer_type_list = cancer_type.split()
+        if len(cancer_type_list) == 1:
+            config_counts['min'] = int(counts_min_max.loc[cancer_type, 'min_counts'])
+            config_counts['max'] = int(counts_min_max.loc[cancer_type, 'max_counts'])
+            counts_func = get_distribution_function(config_counts)
 
 
     noise_func = get_noise_distribution_function(config['noise_distribution'])
@@ -227,7 +229,13 @@ def calculate_counts(signatures, sample_distributions, config):
             config_counts['min'] = int(counts_min_max.loc[cancer_types[cancer_type_index], 'min_counts'])
             config_counts['max'] = int(counts_min_max.loc[cancer_types[cancer_type_index], 'max_counts'])
             counts_func = get_distribution_function(config_counts)
-
+        # If there are multiple cancer types, cycle through them
+        elif cancer_type != 'NA' and len(cancer_type_list) != 1:
+            cancer_type_i = cancer_type_list[i%len(cancer_type_list)]
+            config_counts['min'] = int(counts_min_max.loc[cancer_type_i, 'min_counts'])
+            config_counts['max'] = int(counts_min_max.loc[cancer_type_i, 'max_counts'])
+            counts_func = get_distribution_function(config_counts)
+        
         # The total number of mutations in a sample
         n_counts = counts_func()
         counts = [int(x*n_counts) for x in distribution]
