@@ -1,4 +1,4 @@
-function[ all_lambda_init] = Pipeline(params)
+function[ to_export ] = Pipeline(params)
     
     fields = fieldnames(params);
     for i = 1:numel(fields)
@@ -37,7 +37,7 @@ function[ all_lambda_init] = Pipeline(params)
     M = generate_cost_matrix_M(x);
 
     % Perform Wasserstein NMF
-    [ all_H_lambda_init, D, lambda, objectives_wnmf, reconstructed_data, all_Dw, all_lambdaw, all_reconstructed_dataw, all_D_init, all_lambda_init] = perform_WNMF(data, M, num_iter, ...
+    [ all_H_lambda_init, D, lambda, objectives_wnmf, reconstructed_data, all_Dw, all_lambdaw, all_reconstructed_dataw, all_D_init, all_lambda_init, best_H] = perform_WNMF(data, M, num_iter, ...
         stop, verb, Dss, lss, Alpha, Km, GPU, k, Gamma, wO, rho1, rho2);
 
     % Plot convergence of objectives for Wasserstein NMF
@@ -67,7 +67,10 @@ function[ all_lambda_init] = Pipeline(params)
     to_export.all_lambdakl = all_lambdakl;
     to_export.all_reconstructed_datakl = all_reconstructed_datakl;
     to_export.reconstructed_data = reconstructed_data;
-    to_export.reconstructed_data_nmf = reconstructed_data_nmf;  
+    to_export.reconstructed_data_nmf = reconstructed_data_nmf;
+    to_export.transport_plan = M;
+    to_export.source_data = data;
+    to_export.H = best_H;
 
     % Export D, lambda, D_nmf, lambda_nmf, objectives, and options to json
     exportStruct(to_export, output_dir)
@@ -115,7 +118,7 @@ function [M] = generate_cost_matrix_M(x)
 end
 
 function [all_H_lambda_init, best_D, best_lambda, all_objectives, best_reconstructed_data, all_D, ...
-    all_lambda, all_reconstructed_data, all_D_init, all_lambda_init] = perform_WNMF(data, ...
+    all_lambda, all_reconstructed_data, all_D_init, all_lambda_init, best_H] = perform_WNMF(data, ...
     M, num_iter, stop, verb, Dss, lss, Alpha, Km, GPU, k, Gamma, wO, rho1, rho2)
 
     % Initialize the best results
@@ -175,6 +178,7 @@ function [all_H_lambda_init, best_D, best_lambda, all_objectives, best_reconstru
             best_objective_value = final_objective; % Update the best objective value
             best_D = D; % Update best dictionary
             best_lambda = lambda; % Update best coefficients
+            best_H = HD;
             best_reconstructed_data = reconstructed_data; % Update best reconstruction
         end
     end
