@@ -13,14 +13,15 @@ params.rho2 = 0.1;
 params.stop = 1e-3;
 params.Dss = 0.0007;
 params.lss = 0.0004;
-transport_plans = {'';
-    'distances/distances_uniform.tsv';
-    'distances/distances_overall.tsv';
-    'distances/distances_hamming.tsv'};
+% transport_plans = {'';
+%     'distances/distances_uniform.tsv';
+%     'distances/distances_overall.tsv';
+%     'distances/distances_hamming.tsv'};
+
+transport_plans = {''};
 
 
-
-folder = 'simulated_data_01_15';
+folder = 'simulated_data_01_17';
 
 csvFiles = dir(fullfile(folder, 's*.csv'));
 
@@ -28,6 +29,8 @@ csvFiles = dir(fullfile(folder, 's*.csv'));
 for i = 1:length(csvFiles)
     filePath = fullfile(folder, csvFiles(i).name);
     params.file_path = filePath;
+    matchedStrings = regexp(filename, '\<s_(\d+)', 'tokens');
+    params.k = str2double(matchedStrings{1});
 
     for i = 1:length(transport_plans)
         plan = transport_plans{i};
