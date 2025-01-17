@@ -8,11 +8,11 @@ params.GPU = 0;
 params.k = 8;
 params.Gamma = 1/50;
 params.wO = 1;
-params.rho1 = 0.1;
-params.rho2 = 0.1;
+params.rho1 = 0.3;
+params.rho2 = 0.3;
 params.stop = 1e-3;
-params.Dss = 0.0007;
-params.lss = 0.0004;
+params.Dss = 1e-3;
+params.lss = 6e-4;
 transport_plans = {'';
     'distances/distances_uniform.tsv';
     'distances/distances_overall.tsv';
@@ -29,7 +29,7 @@ csvFiles = dir(fullfile(folder, 's*.csv'));
 for i = 1:length(csvFiles)
     filePath = fullfile(folder, csvFiles(i).name);
     params.file_path = filePath;
-    matchedStrings = regexp(filename, '\<s_(\d+)', 'tokens');
+    matchedStrings = regexp(filePath, '\<s_(\d+)', 'tokens');
     params.k = str2double(matchedStrings{1});
 
     for i = 1:length(transport_plans)
