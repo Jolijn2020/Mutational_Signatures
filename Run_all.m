@@ -40,6 +40,7 @@ for i = 1:length(csvFiles)
             [folderPath, fileName, fileExt] = fileparts(plan);
             parts = split(fileName, '_');
             id = parts(end);
+            id = id{1};
         else
             id='smooth'
         end
