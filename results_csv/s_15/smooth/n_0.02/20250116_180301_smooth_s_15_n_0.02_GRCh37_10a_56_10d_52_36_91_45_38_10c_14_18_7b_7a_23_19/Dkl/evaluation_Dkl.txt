@@ -1,0 +1,15 @@
+=== Evaluation Results ===
+Cutoff Used: 0.9
+s_folder: s_15
+distance: smooth
+n_folder: n_0.02
+run_folder: 20250116_180301_smooth_s_15_n_0.02_GRCh37_10a_56_10d_52_36_91_45_38_10c_14_18_7b_7a_23_19
+subfolder: Dkl
+Number of Ground Truth Signatures: 8
+Number of Detected Signatures: 8
+True Positives: 0
+False Positives: 8
+False Negatives: 8
+Precision: 0
+Recall: 0
+F1 Score: 0
