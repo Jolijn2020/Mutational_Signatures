@@ -3,3 +3,4 @@ jupyterlab == 4.3.0
 pandas == 2.2.3
 matplotlib
 SigProfileExtractor
+seaborn
