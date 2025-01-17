@@ -13,3 +13,12 @@ False Negatives: 8
 Precision: 0
 Recall: 0
 F1 Score: 0
+Index Pairs (Extracted -> Ground Truth):
+  Extracted 0 -> Ground Truth 1
+  Extracted 1 -> Ground Truth 3
+  Extracted 2 -> Ground Truth 7
+  Extracted 3 -> Ground Truth 5
+  Extracted 4 -> Ground Truth 0
+  Extracted 5 -> Ground Truth 6
+  Extracted 6 -> Ground Truth 4
+  Extracted 7 -> Ground Truth 2
