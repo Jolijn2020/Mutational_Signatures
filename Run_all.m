@@ -1,6 +1,6 @@
 params = struct();
 params.num_iter = 10;
-params.visu = 1;
+params.visu = 0;
 params.verb = 1;
 params.Alpha = 0.05;
 params.Km = 'symmetric';
@@ -18,9 +18,10 @@ transport_plans = {'';
     'distances/distances_overall.tsv';
     'distances/distances_hamming.tsv'};
 
+% transport_plans = {''};
 
 
-folder = 'simulated_data_01_15';
+folder = 'simulated_data_01_17';
 
 csvFiles = dir(fullfile(folder, 's*.csv'));
 
@@ -28,6 +29,8 @@ csvFiles = dir(fullfile(folder, 's*.csv'));
 for i = 1:length(csvFiles)
     filePath = fullfile(folder, csvFiles(i).name);
     params.file_path = filePath;
+    matchedStrings = regexp(filename, '\<s_(\d+)', 'tokens');
+    params.k = str2double(matchedStrings{1});
 
     for i = 1:length(transport_plans)
         plan = transport_plans{i};
