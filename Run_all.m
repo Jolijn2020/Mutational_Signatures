@@ -1,6 +1,6 @@
 params = struct();
 params.num_iter = 10;
-params.visu = 1;
+params.visu = 0;
 params.verb = 1;
 params.Alpha = 0.05;
 params.Km = 'symmetric';
@@ -13,12 +13,12 @@ params.rho2 = 0.1;
 params.stop = 1e-3;
 params.Dss = 0.0007;
 params.lss = 0.0004;
-% transport_plans = {'';
-%     'distances/distances_uniform.tsv';
-%     'distances/distances_overall.tsv';
-%     'distances/distances_hamming.tsv'};
+transport_plans = {'';
+    'distances/distances_uniform.tsv';
+    'distances/distances_overall.tsv';
+    'distances/distances_hamming.tsv'};
 
-transport_plans = {''};
+% transport_plans = {''};
 
 
 folder = 'simulated_data_01_17';
