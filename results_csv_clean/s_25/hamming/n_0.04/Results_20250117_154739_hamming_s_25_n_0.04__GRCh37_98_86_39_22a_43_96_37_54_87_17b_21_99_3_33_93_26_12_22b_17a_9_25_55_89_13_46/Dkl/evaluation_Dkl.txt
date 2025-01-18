@@ -1,5 +1,5 @@
 === Evaluation Results ===
-Cutoff: 0.5
+Cutoff: 0.7
 s_folder: s_25
 distance: hamming
 noise: n_0.04
@@ -7,12 +7,12 @@ run_folder: Results_20250117_154739_hamming_s_25_n_0.04__GRCh37_98_86_39_22a_43_
 subfolder: Dkl
 Number of Ground Truth: 25
 Number of Detected: 25
-True Positives: 15
-False Positives: 10
-False Negatives: 10
-Precision: 0.6
-Recall: 0.6
-F1 Score: 0.6
+True Positives: 3
+False Positives: 22
+False Negatives: 22
+Precision: 0.12
+Recall: 0.12
+F1 Score: 0.12
 Index Pairs (Extracted -> Ground Truth):
   Extracted 0 -> Ground Truth 14
   Extracted 1 -> Ground Truth 3

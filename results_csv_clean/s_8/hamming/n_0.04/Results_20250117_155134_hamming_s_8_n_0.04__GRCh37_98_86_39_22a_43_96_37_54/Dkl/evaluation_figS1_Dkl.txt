@@ -1,0 +1,15 @@
+=== Evaluation Results (Figure S1 Style) ===
+Cutoff: 0.7
+s_folder: s_8
+distance: hamming
+noise: n_0.04
+run_folder: Results_20250117_155134_hamming_s_8_n_0.04__GRCh37_98_86_39_22a_43_96_37_54
+subfolder: Dkl
+Number of Ground Truth: 8
+Number of Detected: 8
+True Positives: 2
+False Positives: 6
+False Negatives: 6
+Precision: 0.25
+Recall: 0.25
+F1 Score: 0.25

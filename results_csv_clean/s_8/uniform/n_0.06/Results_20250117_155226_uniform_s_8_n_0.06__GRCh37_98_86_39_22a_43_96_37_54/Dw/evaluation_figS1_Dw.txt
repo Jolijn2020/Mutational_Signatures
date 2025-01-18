@@ -1,0 +1,15 @@
+=== Evaluation Results (Figure S1 Style) ===
+Cutoff: 0.7
+s_folder: s_8
+distance: uniform
+noise: n_0.06
+run_folder: Results_20250117_155226_uniform_s_8_n_0.06__GRCh37_98_86_39_22a_43_96_37_54
+subfolder: Dw
+Number of Ground Truth: 8
+Number of Detected: 8
+True Positives: 3
+False Positives: 5
+False Negatives: 6
+Precision: 0.38
+Recall: 0.33
+F1 Score: 0.35

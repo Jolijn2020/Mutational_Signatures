@@ -1,5 +1,5 @@
 === Evaluation Results ===
-Cutoff Used: 0.5
+Cutoff Used: 0.8
 s_folder: s_8
 distance: uniform
 n_folder: n_0.02
@@ -7,12 +7,12 @@ run_folder: 20250117_154918_uniform_s_8_n_0.02__GRCh37_98_86_39_22a_43_96_37_54
 subfolder: Dw
 Number of Ground Truth Signatures: 8
 Number of Detected Signatures: 8
-True Positives: 4
-False Positives: 4
-False Negatives: 4
-Precision: 0.5
-Recall: 0.5
-F1 Score: 0.5
+True Positives: 0
+False Positives: 8
+False Negatives: 8
+Precision: 0
+Recall: 0
+F1 Score: 0
 Index Pairs (Extracted -> Ground Truth):
   Extracted 0 -> Ground Truth 4
   Extracted 1 -> Ground Truth 1

@@ -1,5 +1,5 @@
 === Evaluation Results ===
-Cutoff Used: 0.5
+Cutoff Used: 0.8
 s_folder: s_25
 distance: smooth
 n_folder: n_0.04
@@ -7,12 +7,12 @@ run_folder: 20250117_154648__s_25_n_0.04__GRCh37_98_86_39_22a_43_96_37_54_87_17b
 subfolder: Dkl
 Number of Ground Truth Signatures: 25
 Number of Detected Signatures: 25
-True Positives: 13
-False Positives: 12
-False Negatives: 12
-Precision: 0.52
-Recall: 0.52
-F1 Score: 0.52
+True Positives: 1
+False Positives: 24
+False Negatives: 24
+Precision: 0.04
+Recall: 0.04
+F1 Score: 0.04
 Index Pairs (Extracted -> Ground Truth):
   Extracted 0 -> Ground Truth 9
   Extracted 1 -> Ground Truth 21

@@ -1,5 +1,5 @@
 === Evaluation Results ===
-Cutoff: 0.5
+Cutoff: 0.7
 s_folder: s_15
 distance: smooth
 noise: n_0.06
@@ -7,12 +7,12 @@ run_folder: Results_20250117_154429__s_15_n_0.06__GRCh37_98_86_39_22a_43_96_37_5
 subfolder: Dw
 Number of Ground Truth: 15
 Number of Detected: 15
-True Positives: 7
-False Positives: 8
-False Negatives: 8
-Precision: 0.47
-Recall: 0.47
-F1 Score: 0.47
+True Positives: 3
+False Positives: 12
+False Negatives: 12
+Precision: 0.2
+Recall: 0.2
+F1 Score: 0.2
 Index Pairs (Extracted -> Ground Truth):
   Extracted 0 -> Ground Truth 4
   Extracted 1 -> Ground Truth 14
