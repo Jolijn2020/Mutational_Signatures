@@ -1,0 +1,24 @@
+=== Evaluation Results ===
+Cutoff Used: 0.5
+s_folder: s_8
+distance: hamming
+n_folder: n_0.02
+run_folder: 20250117_155001_hamming_s_8_n_0.02__GRCh37_98_86_39_22a_43_96_37_54
+subfolder: Dw
+Number of Ground Truth Signatures: 8
+Number of Detected Signatures: 8
+True Positives: 3
+False Positives: 5
+False Negatives: 5
+Precision: 0.38
+Recall: 0.38
+F1 Score: 0.38
+Index Pairs (Extracted -> Ground Truth):
+  Extracted 0 -> Ground Truth 4
+  Extracted 1 -> Ground Truth 7
+  Extracted 2 -> Ground Truth 0
+  Extracted 3 -> Ground Truth 6
+  Extracted 4 -> Ground Truth 2
+  Extracted 5 -> Ground Truth 1
+  Extracted 6 -> Ground Truth 5
+  Extracted 7 -> Ground Truth 3

@@ -1,0 +1,24 @@
+=== Evaluation Results ===
+Cutoff Used: 0.5
+s_folder: s_8
+distance: uniform
+n_folder: n_0.04
+run_folder: 20250117_155045_uniform_s_8_n_0.04__GRCh37_98_86_39_22a_43_96_37_54
+subfolder: Dkl
+Number of Ground Truth Signatures: 8
+Number of Detected Signatures: 8
+True Positives: 4
+False Positives: 4
+False Negatives: 4
+Precision: 0.5
+Recall: 0.5
+F1 Score: 0.5
+Index Pairs (Extracted -> Ground Truth):
+  Extracted 0 -> Ground Truth 4
+  Extracted 1 -> Ground Truth 7
+  Extracted 2 -> Ground Truth 6
+  Extracted 3 -> Ground Truth 3
+  Extracted 4 -> Ground Truth 0
+  Extracted 5 -> Ground Truth 5
+  Extracted 6 -> Ground Truth 2
+  Extracted 7 -> Ground Truth 1

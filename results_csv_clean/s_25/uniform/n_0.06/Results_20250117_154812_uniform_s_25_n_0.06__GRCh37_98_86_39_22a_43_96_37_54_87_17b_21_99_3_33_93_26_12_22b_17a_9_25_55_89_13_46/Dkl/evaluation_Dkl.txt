@@ -1,0 +1,41 @@
+=== Evaluation Results ===
+Cutoff: 0.5
+s_folder: s_25
+distance: uniform
+noise: n_0.06
+run_folder: Results_20250117_154812_uniform_s_25_n_0.06__GRCh37_98_86_39_22a_43_96_37_54_87_17b_21_99_3_33_93_26_12_22b_17a_9_25_55_89_13_46
+subfolder: Dkl
+Number of Ground Truth: 25
+Number of Detected: 25
+True Positives: 12
+False Positives: 13
+False Negatives: 13
+Precision: 0.48
+Recall: 0.48
+F1 Score: 0.48
+Index Pairs (Extracted -> Ground Truth):
+  Extracted 0 -> Ground Truth 6
+  Extracted 1 -> Ground Truth 7
+  Extracted 2 -> Ground Truth 15
+  Extracted 3 -> Ground Truth 13
+  Extracted 4 -> Ground Truth 21
+  Extracted 5 -> Ground Truth 2
+  Extracted 6 -> Ground Truth 5
+  Extracted 7 -> Ground Truth 23
+  Extracted 8 -> Ground Truth 14
+  Extracted 9 -> Ground Truth 1
+  Extracted 10 -> Ground Truth 16
+  Extracted 11 -> Ground Truth 24
+  Extracted 12 -> Ground Truth 9
+  Extracted 13 -> Ground Truth 17
+  Extracted 14 -> Ground Truth 0
+  Extracted 15 -> Ground Truth 10
+  Extracted 16 -> Ground Truth 4
+  Extracted 17 -> Ground Truth 22
+  Extracted 18 -> Ground Truth 12
+  Extracted 19 -> Ground Truth 8
+  Extracted 20 -> Ground Truth 19
+  Extracted 21 -> Ground Truth 11
+  Extracted 22 -> Ground Truth 20
+  Extracted 23 -> Ground Truth 18
+  Extracted 24 -> Ground Truth 3

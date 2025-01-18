@@ -1,0 +1,31 @@
+=== Evaluation Results ===
+Cutoff: 0.5
+s_folder: s_15
+distance: hamming
+noise: n_0.02
+run_folder: Results_20250117_154240_hamming_s_15_n_0.02__GRCh37_98_86_39_22a_43_96_37_54_87_17b_21_99_3_33_93
+subfolder: Dkl
+Number of Ground Truth: 15
+Number of Detected: 15
+True Positives: 9
+False Positives: 6
+False Negatives: 6
+Precision: 0.6
+Recall: 0.6
+F1 Score: 0.6
+Index Pairs (Extracted -> Ground Truth):
+  Extracted 0 -> Ground Truth 6
+  Extracted 1 -> Ground Truth 4
+  Extracted 2 -> Ground Truth 7
+  Extracted 3 -> Ground Truth 11
+  Extracted 4 -> Ground Truth 8
+  Extracted 5 -> Ground Truth 2
+  Extracted 6 -> Ground Truth 13
+  Extracted 7 -> Ground Truth 9
+  Extracted 8 -> Ground Truth 0
+  Extracted 9 -> Ground Truth 1
+  Extracted 10 -> Ground Truth 5
+  Extracted 11 -> Ground Truth 10
+  Extracted 12 -> Ground Truth 14
+  Extracted 13 -> Ground Truth 3
+  Extracted 14 -> Ground Truth 12
