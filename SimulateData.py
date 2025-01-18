@@ -38,6 +38,7 @@ def parse_args():
     parser.add_argument("--counts_distribution_distribution", type=str, help="Counts distribution type.")
     parser.add_argument("--counts_distribution_min", type=int, help="Minimum counts value.")
     parser.add_argument("--counts_distribution_max", type=int, help="Maximum counts value.")
+    parser.add_argument("--counts_distribution_cancer_type", type=str, help="Cancer type name, \'random\', or \'manual\' if want to set a distribution yourself.")
 
     return parser.parse_args()
 
@@ -61,7 +62,7 @@ def load_config(args):
 
 
 
-def simulate_data(config):
+def simulate_data(config, print_text=False):
     # signatures_file_path, signatures_to_extract, n_samples, average_noise, save_dir=None
 
     # Read in the signatures
@@ -78,11 +79,16 @@ def simulate_data(config):
 
     data_file, config_file = create_file_names(config['save_dir'], config['signatures_to_extract'], config['signatures_file_path'], config['identifier'])
     simulated_data.to_csv(data_file, index=True)
-    print('Sucessfully saved simulated data in ' + data_file)
+    if print_text:
+        print(data_file)
+        print('Sucessfully saved simulated data in ' + data_file)
 
     with open(config_file, 'w') as f:
         json.dump(config, f)
-    print('Sucessfully saved meta-data in ' + config_file)
+    if print_text:
+        print('Sucessfully saved meta-data in ' + config_file)
+        print('')
+        print(simulated_data.head())
 
     return simulated_data, data_file, config_file
 
@@ -193,7 +199,23 @@ def get_distribution_of_samples(signatures, n_samples, use_sign_active_prob, sig
 
 
 def calculate_counts(signatures, sample_distributions, config):
-    counts_func = get_distribution_function(config['counts_distribution'])
+    counts_min_max = pd.read_csv('mutation_counts/TCGA/WES_TCGA.96_min_max.csv', sep=',')
+    config_counts = config['counts_distribution']
+    cancer_type = config_counts['cancer_type']
+    n_cancer_types = counts_min_max.shape[0]
+    cancer_types = list(counts_min_max.index.values) 
+
+    if cancer_type == 'NA':
+        counts_func = get_distribution_function(config_counts)
+    elif cancer_type != 'random':
+        counts_min_max = counts_min_max.set_index('cancer_type')
+        cancer_type_list = cancer_type.split()
+        if len(cancer_type_list) == 1:
+            config_counts['min'] = int(counts_min_max.loc[cancer_type, 'min_counts'])
+            config_counts['max'] = int(counts_min_max.loc[cancer_type, 'max_counts'])
+            counts_func = get_distribution_function(config_counts)
+
+
     noise_func = get_noise_distribution_function(config['noise_distribution'])
 
     simulated_data = signatures.dot(sample_distributions)
@@ -201,6 +223,19 @@ def calculate_counts(signatures, sample_distributions, config):
     for i in range(simulated_data.shape[1]):
         distribution = simulated_data[i]
 
+        # If the cancer_type is random, use a different random cancer_type each time
+        if cancer_type == 'random':
+            cancer_type_index = random.randint(0, n_cancer_types-1)
+            config_counts['min'] = int(counts_min_max.loc[cancer_types[cancer_type_index], 'min_counts'])
+            config_counts['max'] = int(counts_min_max.loc[cancer_types[cancer_type_index], 'max_counts'])
+            counts_func = get_distribution_function(config_counts)
+        # If there are multiple cancer types, cycle through them
+        elif cancer_type != 'NA' and len(cancer_type_list) != 1:
+            cancer_type_i = cancer_type_list[i%len(cancer_type_list)]
+            config_counts['min'] = int(counts_min_max.loc[cancer_type_i, 'min_counts'])
+            config_counts['max'] = int(counts_min_max.loc[cancer_type_i, 'max_counts'])
+            counts_func = get_distribution_function(config_counts)
+        
         # The total number of mutations in a sample
         n_counts = counts_func()
         counts = [int(x*n_counts) for x in distribution]
